@@ -10,22 +10,19 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import useSWR from "swr";
+import { FormContext } from "../../App";
 // import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export default function Information({
-  errors,
-  handleBlur,
-  handleChange,
-  touched,
-  setFieldValue,
-}) {
+export default function Information() {
   const { data: users } = useSWR("/data/users.json", fetcher);
   const { data: countries } = useSWR("/data/countries.json", fetcher);
   const [cities, setCities] = useState([]);
+  const { errors, handleBlur, handleChange, touched, setFieldValue } =
+    useContext(FormContext);
 
   const dateChanged = (val) => setFieldValue("date", new Date(val));
 
@@ -79,7 +76,7 @@ export default function Information({
               label="Chose the date"
               dateAdapter={AdapterDayjs}
               onChange={dateChanged}
-              onBlur={dateChanged}
+              onBlur={handleBlur}
               name="date"
             />
           </DemoContainer>

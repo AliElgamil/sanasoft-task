@@ -35,6 +35,10 @@ body {
   border-bottom: none;
 }
 
+.border-none {
+  border-top: 1px solid rgba(224, 224, 224, 1);
+}
+
 .text-right {
   text-align: right !important;
 }
@@ -42,6 +46,8 @@ body {
 .text-right > span {
   cursor: pointer;
   text-decoration: underline;
+  padding: 0.2rem;
+  display: block;
 }
 
 .text-right > span:hover {
@@ -52,4 +58,38 @@ body {
 .col-table
   .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
   padding: 8px 15px;
+}
+
+.col-table > .flex {
+  display: flex !important;
+  align-items: center;
+  flex-direction: row !important;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.col-table input {
+  max-width: 40px;
+}
+
+.col-table button {
+  font-size: 1.5rem;
+  min-width: 1rem;
+  min-height: 1rem;
+}
+
+td label {
+  top: -7px !important;
+}
+
+.table_text-error {
+  margin-right: 1rem;
+}
+
+.group_btn {
+  width: 100%;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
 }

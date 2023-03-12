@@ -1,8 +1,9 @@
-import React, { Fragment, useContext, useState } from "react";
+import React, { Fragment, useContext, useEffect, useReducer } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import useSWR from "swr";
 import {
+  Button,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -27,8 +28,6 @@ function createRow(desc, qty, unit, vat) {
   const productVat = vatRow(price, vat);
   const finalPrice = productVat + price;
 
-  console.log();
-  console.log(price);
   return {
     id: crypto.randomUUID(),
     desc,
@@ -41,6 +40,39 @@ function createRow(desc, qty, unit, vat) {
   };
 }
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "incremented_quantity":
+      return {
+        quantity: state.quantity + 1,
+        vat: state.vat,
+      };
+    case "decremented_quantity":
+      const quantity = state.quantity - 1;
+      return {
+        quantity: quantity ? quantity : 1,
+        vat: state.vat,
+      };
+    case "new_value":
+      return {
+        quantity: +action.newQuantity,
+        vat: state.vat,
+      };
+    case "incremented_vat":
+      const vatIncr = state.vat + 1;
+      return {
+        vat: vatIncr <= 14 ? vatIncr : 14,
+        quantity: state.quantity,
+      };
+    case "decremented_vat":
+      const vatDecr = state.vat - 1;
+      return {
+        vat: vatDecr >= 0 ? vatDecr : 0,
+        quantity: state.quantity,
+      };
+  }
+};
+
 export default function RowTable({
   row,
   ccyFormat,
@@ -49,107 +81,149 @@ export default function RowTable({
   productsBL,
 }) {
   const { data: products } = useSWR("/data/products.json", fetcher);
-  const { errors, handleChange, handleBlur, touched, setFieldValue } =
+  const { setFieldValue, handleBlur, errors, touched } =
     useContext(FormContext);
-  const [update, setUpdate] = useState(false);
+  const [state, dispatch] = useReducer(reducer, { quantity: 1, vat: 14 });
 
   const handleProduct = (val) => {
     const product = products.filter(
       (product) => val.target.value === product.productName
     )[0];
-    if (update) {
-      setProductBay((PrevState) =>
-        PrevState.map((pro) => {
-          if (pro.id === row.id) {
-            return createRow(val.target.value, pro.qty, product.price, pro.vat);
-          }
-          return pro;
-        })
-      );
-    } else {
-      setProductBay((val) => {
-        const prevState = val.filter((item) => item);
-        return [
-          ...prevState,
-          createRow(product.productName, 1, product.price, 14),
-        ];
-      });
-      setUpdate(true);
-    }
-    setFieldValue("product", val);
-  };
-
-  const handleQuntity = (val) => {
-    console.log(row);
-
-    setProductBay((prevState) => {
-      return prevState.map((item) => {
-        if (item.id === row.id) {
-          return createRow(row.desc, +val.target.value, item.unit, item.vat);
+    setProductBay((PrevState) => {
+      const nextState = PrevState.map((pro, ind) => {
+        if (ind === index) {
+          return createRow(
+            val.target.value,
+            state.quantity,
+            product.price,
+            state.vat
+          );
         }
-        return item;
+        return pro;
       });
+
+      setFieldValue("products", nextState);
+      return nextState;
     });
   };
 
+  useEffect(() => {
+    const described = setTimeout(() => {
+      setProductBay((prevState) => {
+        const newState = prevState.map((item, ind) => {
+          if (item && ind === index) {
+            return createRow(row.desc, state.quantity, item.unit, state.vat);
+          }
+          return item;
+        });
+
+        setFieldValue("products", newState);
+        return newState;
+      });
+    }, 100);
+
+    return () => clearTimeout(described);
+  }, [state.quantity, state.vat]);
+
+  const handleQuantity = (val) => {
+    const value = val.target.value;
+    dispatch({ type: "new_value", newQuantity: value });
+  };
+
   return (
-    <TableRow className={index === productsBL ? "last_row" : ""}>
-      {
-        <Fragment>
-          <TableCell className="col-table">
-            <FormControl
-              sx={{
-                margin: "15px 0",
-              }}
-            >
-              <InputLabel id="country">Country</InputLabel>
-              <Select
-                name="country"
-                labelId="country"
-                label="Country"
+    <Fragment>
+      <TableRow className={index === productsBL ? "last_row" : ""}>
+        {
+          <Fragment>
+            <TableCell className="col-table">
+              <FormControl
                 sx={{
-                  width: "200px",
-                  heigh: "50px",
+                  margin: "15px 0",
                 }}
-                onChange={handleProduct}
-                onBlur={handleBlur}
-                defaultValue={""}
               >
-                {products?.map((product, index) => (
-                  <MenuItem value={product.productName} key={index}>
-                    {product.productName}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.product && touched.product ? (
-                <FormHelperText error>{errors.product}</FormHelperText>
-              ) : null}
-            </FormControl>
-          </TableCell>
-          <TableCell align="right">{row ? row.unit : ""}</TableCell>
-          <TableCell className="col-table" align="right">
-            {row ? (
-              <TextField
-                defaultValue={row.qty}
-                onChange={handleQuntity}
-                type="number"
-              />
-            ) : (
-              ""
-            )}
-          </TableCell>
-          <TableCell align="right">{row ? ccyFormat(row.price) : ""}</TableCell>
-          <TableCell className="col-table" align="right">
-            {row ? row.vat + "%" : ""}
-          </TableCell>
-          <TableCell align="right">
-            {row ? ccyFormat(row.productVat) : ""}
-          </TableCell>
-          <TableCell align="right">
-            {row ? ccyFormat(row.finalPrice) : ""}
-          </TableCell>
-        </Fragment>
-      }
-    </TableRow>
+                <InputLabel id="country">Country</InputLabel>
+                <Select
+                  name="product"
+                  labelId="country"
+                  label="Country"
+                  sx={{
+                    width: "200px",
+                    heigh: "50px",
+                  }}
+                  onChange={handleProduct}
+                  value={row.desc}
+                >
+                  {products?.map((product, index) => (
+                    <MenuItem value={product.productName} key={index}>
+                      {product.productName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </TableCell>
+            <TableCell align="right">{row ? row.unit : ""}</TableCell>
+            <TableCell className="col-table" align="right">
+              <div className="flex">
+                <Button
+                  type="button"
+                  onClick={() => dispatch({ type: "decremented_quantity" })}
+                >
+                  -
+                </Button>
+                <TextField
+                  value={state.quantity}
+                  onChange={handleQuantity}
+                  onBlur={handleBlur}
+                />
+                <Button
+                  type="button"
+                  onClick={() => dispatch({ type: "incremented_quantity" })}
+                >
+                  +
+                </Button>
+              </div>
+            </TableCell>
+            <TableCell align="right">
+              {row ? ccyFormat(row.price) : ""}
+            </TableCell>
+            <TableCell className="col-table" align="right">
+              <div className="flex">
+                <Button
+                  type="button"
+                  onClick={() => dispatch({ type: "decremented_vat" })}
+                >
+                  -
+                </Button>
+                <span>{state.vat}%</span>
+                <Button
+                  type="button"
+                  onClick={() => dispatch({ type: "incremented_vat" })}
+                >
+                  +
+                </Button>
+              </div>
+            </TableCell>
+            <TableCell align="right">
+              {row ? ccyFormat(row.productVat) : ""}
+            </TableCell>
+            <TableCell align="right">
+              {row ? ccyFormat(row.finalPrice) : ""}
+            </TableCell>
+          </Fragment>
+        }
+      </TableRow>
+
+      {/* {errors.products ? (
+        errors.products.length > index + 1 && touched.products ? (
+          <TableRow>
+            <TableCell colSpan={7} className="border-none">
+              <FormHelperText error className="table_text-error">
+                {errors.products[index][keys[0]]}
+              </FormHelperText>
+            </TableCell>
+          </TableRow>
+        ) : null
+      ) : null} */}
+    </Fragment>
   );
 }

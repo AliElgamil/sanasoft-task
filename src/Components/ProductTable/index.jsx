@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -7,21 +7,52 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import RowTable from "./RowTable";
+import { FormContext } from "../../App";
+import { FormHelperText } from "@mui/material";
 
 function ccyFormat(num) {
   return `${num.toFixed(2)}`;
 }
-function subtotal(items) {
-  return items.map(({ price }) => price).reduce((sum, i) => sum + i, 0);
-}
-const invoiceSubtotal = subtotal([]);
-const invoiceTaxes = 14 * invoiceSubtotal;
-const invoiceTotal = invoiceTaxes + invoiceSubtotal;
 
-export default function ProductTable() {
-  const [productsBay, setProductBay] = useState([null]);
+const product = {
+  id: crypto.randomUUID(),
+  desc: "",
+  qty: 1,
+  unit: 0,
+  price: 0,
+  vat: 14,
+  productVat: 0,
+  finalPrice: 0,
+};
 
-  const addRow = () => setProductBay((val) => [...val, null]);
+export default function ProductTable({ productsBay, setProductBay }) {
+  const { setFieldValue, errors } = useContext(FormContext);
+  const [productError, setProductError] = useState([]);
+
+  const addRow = () =>
+    setProductBay((val) => {
+      const nextState = [...val, { ...product }];
+      setFieldValue("products", nextState);
+      return nextState;
+    });
+  const subtotal = productsBay.reduce((a, pro) => pro.finalPrice + a, 0);
+  const totalVat = productsBay.reduce((a, pro) => pro.productVat + a, 0);
+  const total = subtotal + totalVat;
+
+  useEffect(() => {
+    setFieldValue("subtotal", subtotal);
+    setFieldValue("totalVat", totalVat);
+    setFieldValue("total", total);
+  }, [productsBay]);
+
+  useEffect(() => {
+    // console.log(errors.products.length);
+    if (errors.products) setProductError(errors.products.filter((pro) => pro));
+    else setProductError([]);
+  }, [errors.products]);
+
+  console.log(errors);
+  console.log(productError);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="spanning table">
@@ -51,22 +82,32 @@ export default function ProductTable() {
           <TableRow>
             <TableCell rowSpan={1} colSpan={7} className="text-right">
               <hr />
-              <span onClick={addRow}>add</span>
+              <span onClick={addRow}>Add new product</span>
             </TableCell>
           </TableRow>
+
+          {productError.length ? (
+            <TableRow>
+              <TableCell colSpan={7} className="border-none">
+                <FormHelperText error className="table_text-error">
+                  {Object.values(productError[0])[0]}
+                </FormHelperText>
+              </TableCell>
+            </TableRow>
+          ) : null}
 
           <TableRow>
             <TableCell rowSpan={3} colSpan={4} />
             <TableCell colSpan={2}>Subtotal</TableCell>
-            <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
+            <TableCell align="right">${subtotal}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell colSpan={2}>Tax</TableCell>
-            <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
+            <TableCell align="right">${totalVat}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell colSpan={2}>Total</TableCell>
-            <TableCell align="right">{ccyFormat(invoiceTotal)}</TableCell>
+            <TableCell align="right">${total}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

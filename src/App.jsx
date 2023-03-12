@@ -2,6 +2,7 @@ import {
   AppBar,
   Box,
   Button,
+  ButtonGroup,
   Container,
   FormControl,
   Typography,
@@ -11,7 +12,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Information from "./Components/Information";
 import ProductTable from "./Components/ProductTable";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 
 // console.log(new Date());
 export const FormContext = createContext();
@@ -22,17 +23,42 @@ const SignupSchema = Yup.object().shape({
   country: Yup.string().required("Should chose country"),
   city: Yup.string().required("Should be chose city"),
   address: Yup.string()
-    .min(10, "Address too Short!")
+    .min(7, "Address too Short!")
     .max(50, "Address too Long!")
     .required("Should Enter a valid address"),
-  product: Yup.string().required("Should be chose Product"),
-  quantity: Yup.number().moreThan(0, "The quantity must be greater than zero."),
-  vat: Yup.number()
-    .moreThan(0, "The vat must be grater than or equal to zero.")
-    .lessThan(15, "The vat must be less than or equal to 14"),
+  products: Yup.array()
+    .of(
+      Yup.object({
+        id: Yup.string(),
+        desc: Yup.string().required("Should be chosen product"),
+        qty: Yup.number().moreThan(
+          0,
+          "Should be chosen quantity greater than Zero"
+        ),
+        unit: Yup.number(),
+        price: Yup.number(),
+        vat: Yup.number().lessThan(15).required("Should be chosen vat"),
+        productVat: Yup.number(),
+        finalPrice: Yup.number(),
+      })
+    )
+    .required("Should be chose Product"),
 });
 
+const product = {
+  id: crypto.randomUUID(),
+  desc: "",
+  qty: 1,
+  unit: 0,
+  price: 0,
+  vat: 14,
+  productVat: 0,
+  finalPrice: 0,
+};
+
 function App() {
+  const [productsBay, setProductBay] = useState([product]);
+
   return (
     <Box className="app" paddingTop={"80px"}>
       <AppBar>
@@ -57,14 +83,14 @@ function App() {
             country: "",
             city: "",
             address: "",
-            product: "",
-            quantity: 1,
-            vat: 0,
+            products: [],
+            subtotal: 0,
+            totalVat: 0,
+            total: 0,
           }}
           validationSchema={SignupSchema}
           onSubmit={(values) => {
             // same shape as initial values
-            console.log("submit");
             console.log(values);
           }}
         >
@@ -80,27 +106,26 @@ function App() {
             >
               <Form>
                 {/* Information Component */}
-                <Information
-                  errors={errors}
-                  handleBlur={handleBlur}
-                  handleChange={handleChange}
-                  touched={touched}
-                  setFieldValue={setFieldValue}
-                />
+                <Information />
                 {/* Product Table Component */}
-                <ProductTable />
+                <ProductTable
+                  productsBay={productsBay}
+                  setProductBay={setProductBay}
+                />
 
                 {/* Button Submit */}
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    margin: "15px auto",
-                    display: "block",
-                  }}
-                >
-                  Submit
-                </Button>
+                <ButtonGroup className="group_btn">
+                  <Button
+                    type="button"
+                    variant="contained"
+                    onClick={() => setProductBay([{ ...product }])}
+                  >
+                    Reset Products
+                  </Button>
+                  <Button type="submit" variant="contained">
+                    Submit
+                  </Button>
+                </ButtonGroup>
               </Form>
             </FormContext.Provider>
           )}
