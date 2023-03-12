@@ -117,10 +117,9 @@ function App() {
                   <Button
                     type="button"
                     variant="contained"
-                    onClick={
-                      (() => setProductBay([{ ...product }]),
-                      setFieldValue("product", [{ ...product }]))
-                    }
+                    onClick={() => {
+                      setProductBay([{ ...product }]);
+                    }}
                   >
                     Reset Products
                   </Button>

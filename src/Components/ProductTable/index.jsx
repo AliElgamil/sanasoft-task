@@ -40,6 +40,7 @@ export default function ProductTable({ productsBay, setProductBay }) {
   const total = subtotal + totalVat;
 
   useEffect(() => {
+    setFieldValue("products", [{ ...product }]);
     setFieldValue("subtotal", subtotal);
     setFieldValue("totalVat", totalVat);
     setFieldValue("total", total);
