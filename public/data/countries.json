@@ -1,0 +1,90 @@
+[
+  {
+    "countryName": "Egypt",
+    "cities": [
+      {
+        "cityName": "Cairo"
+      },
+      {
+        "cityName": "Alexandria"
+      },
+      {
+        "cityName": "Rasheed"
+      },
+      {
+        "cityName": "Mansora"
+      },
+      {
+        "cityName": "Mersa Matruh"
+      }
+    ]
+  },
+  {
+    "countryName": "Saudi Arabia",
+    "cities": [
+      {
+        "cityName": "Riyadh"
+      },
+      {
+        "cityName": "Jeddah"
+      },
+      {
+        "cityName": "Mecca"
+      },
+      {
+        "cityName": "Dammam"
+      }
+    ]
+  },
+  {
+    "countryName": "United Arab Emirates",
+    "cities": [
+      {
+        "cityName": "Dubai"
+      },
+      {
+        "cityName": "Abu Dhabi"
+      },
+      {
+        "cityName": "Sharjah"
+      },
+      {
+        "cityName": "Palm Jumeirah"
+      }
+    ]
+  },
+  {
+    "countryName": "Qatar",
+    "cities": [
+      {
+        "cityName": "Doha"
+      },
+      {
+        "cityName": "The Pearl‑Qatar"
+      },
+      {
+        "cityName": "Al Wakrah"
+      },
+      {
+        "cityName": "Al Khor"
+      }
+    ]
+  },
+  {
+    "countryName": "Morocco",
+    "cities": [
+      {
+        "cityName": "Marrakesh"
+      },
+      {
+        "cityName": "Casablanca"
+      },
+      {
+        "cityName": "Fes"
+      },
+      {
+        "cityName": "Fes"
+      }
+    ]
+  }
+]

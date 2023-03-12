@@ -1,0 +1,55 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  font-family: "Poppins", sans-serif;
+}
+
+.select_input {
+  min-width: 120px;
+}
+
+.info-input {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 500px;
+  align-items: baseline;
+  margin: auto;
+}
+
+.info-input > div {
+  flex-grow: 1;
+}
+
+.info-input > div > div,
+.info-input > div > div > div {
+  width: 100%;
+  max-width: initial;
+}
+
+.last_row > td {
+  border-bottom: none;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-right > span {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.text-right > span:hover {
+  color: red;
+}
+
+.col-table input,
+.col-table
+  .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 8px 15px;
+}
