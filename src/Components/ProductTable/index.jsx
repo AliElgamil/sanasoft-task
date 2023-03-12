@@ -46,13 +46,10 @@ export default function ProductTable({ productsBay, setProductBay }) {
   }, [productsBay]);
 
   useEffect(() => {
-    // console.log(errors.products.length);
     if (errors.products) setProductError(errors.products.filter((pro) => pro));
     else setProductError([]);
   }, [errors.products]);
 
-  console.log(errors);
-  console.log(productError);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="spanning table">

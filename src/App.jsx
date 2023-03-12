@@ -14,7 +14,6 @@ import Information from "./Components/Information";
 import ProductTable from "./Components/ProductTable";
 import { createContext, useContext, useState } from "react";
 
-// console.log(new Date());
 export const FormContext = createContext();
 
 const SignupSchema = Yup.object().shape({
