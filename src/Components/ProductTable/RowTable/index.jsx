@@ -212,18 +212,6 @@ export default function RowTable({
           </Fragment>
         }
       </TableRow>
-
-      {/* {errors.products ? (
-        errors.products.length > index + 1 && touched.products ? (
-          <TableRow>
-            <TableCell colSpan={7} className="border-none">
-              <FormHelperText error className="table_text-error">
-                {errors.products[index][keys[0]]}
-              </FormHelperText>
-            </TableCell>
-          </TableRow>
-        ) : null
-      ) : null} */}
     </Fragment>
   );
 }

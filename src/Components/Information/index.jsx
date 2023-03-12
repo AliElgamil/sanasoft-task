@@ -13,7 +13,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useContext, useState } from "react";
 import useSWR from "swr";
 import { FormContext } from "../../App";
-// import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -82,9 +81,7 @@ export default function Information() {
           </DemoContainer>
         </LocalizationProvider>
         {errors.date && touched.date ? (
-          <FormHelperText error>
-            date field must be at earlier than or equal the date of the day
-          </FormHelperText>
+          <FormHelperText error>{errors.date}</FormHelperText>
         ) : null}
       </FormControl>
 

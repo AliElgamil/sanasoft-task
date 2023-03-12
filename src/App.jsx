@@ -18,7 +18,12 @@ export const FormContext = createContext();
 
 const SignupSchema = Yup.object().shape({
   userId: Yup.string().required("Should be chose customer"),
-  date: Yup.date().max(new Date()).required("Required"),
+  date: Yup.date()
+    .max(
+      new Date(),
+      "date field must be at earlier than or equal the date of the day"
+    )
+    .required("Required"),
   country: Yup.string().required("Should chose country"),
   city: Yup.string().required("Should be chose city"),
   address: Yup.string()
@@ -36,7 +41,9 @@ const SignupSchema = Yup.object().shape({
         ),
         unit: Yup.number(),
         price: Yup.number(),
-        vat: Yup.number().lessThan(15).required("Should be chosen vat"),
+        vat: Yup.number()
+          .lessThan(15, "Should be less than or equal 14%")
+          .required("Should be chosen vat"),
         productVat: Yup.number(),
         finalPrice: Yup.number(),
       })
