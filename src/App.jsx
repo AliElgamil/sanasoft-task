@@ -92,6 +92,7 @@ function App() {
           onSubmit={(values) => {
             // same shape as initial values
             console.log(values);
+            alert(JSON.stringify(values));
           }}
         >
           {({ errors, touched, handleBlur, handleChange, setFieldValue }) => (
